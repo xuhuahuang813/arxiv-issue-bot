@@ -16,7 +16,8 @@ keywords:
   - "DBMS"
   - "test"
   - "bug"
-  - "defect"
+  - "cardinality estimation"
+  - "query optimization"
 
 # Maximum number of papers to fetch per category per run
 max_results_per_category: 50
