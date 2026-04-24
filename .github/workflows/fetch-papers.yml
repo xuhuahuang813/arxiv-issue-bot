@@ -28,14 +28,24 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 -m src.main
 
+      - name: Resolve report path
+        run: echo "REPORT_PATH=reports/$(date -u +%F).md" >> "$GITHUB_ENV"
+
+      - name: Upload daily report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arxiv-daily-report
+          path: ${{ env.REPORT_PATH }}
+          if-no-files-found: error
+
       - name: Commit archived papers
         run: |
-          if git diff --quiet -- data/papers; then
-            echo "No new archived papers"
+          if git diff --quiet -- data/papers reports; then
+            echo "No new archived content"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/papers
+          git add data/papers reports
           git commit -m "Archive latest arXiv papers"
           git push

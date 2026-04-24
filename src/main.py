@@ -1,11 +1,13 @@
 import sys
 import time
+from datetime import date
 
 from src.archive import archive_paper, is_already_archived
 from src.config import load_config
 from src.fetcher import ArxivFetcher, Paper
 from src.filter import filter_papers
 from src.issue_manager import create_issue, is_already_posted, normalize_arxiv_id
+from src.report import write_daily_report
 
 
 def main() -> None:
@@ -36,6 +38,15 @@ def main() -> None:
         p for p in filtered if not is_already_archived(config.archive_dir, p.source_id)
     ]
     print(f"New papers (not yet archived): {len(new_papers)}")
+
+    report_path = write_daily_report(
+        papers=new_papers,
+        report_dir=config.report_dir,
+        report_date=date.today(),
+        categories=config.categories,
+        keywords=config.keywords,
+    )
+    print(f"Daily report: {report_path}")
 
     archived = 0
     created = 0

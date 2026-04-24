@@ -30,5 +30,8 @@ include_cross_listed: true
 # Where to save archived paper summaries
 archive_dir: "data/papers"
 
+# Where to save daily summary reports
+report_dir: "reports"
+
 # Whether to also create GitHub Issues for new papers
 create_github_issues: false
