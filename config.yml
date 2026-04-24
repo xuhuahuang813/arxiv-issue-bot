@@ -1,17 +1,20 @@
 # arXiv categories to monitor
 # Full list: https://arxiv.org/category_taxonomy
 categories:
-  - cs.AI
+  - cs.DB
   - cs.SE
+  - cs.AI
 
 # Optional keyword filters (applied to title + abstract)
 # If empty or omitted, ALL papers in the categories above are posted.
 # Papers matching ANY keyword are included.
 keywords:
   - "large language model"
-  - "transformer"
-  - "refactoring"
-  - "agent"
+  - "fuzzing"
+  - "regression"
+  - "database"
+  - "DBMS"
+  - "test"
   - "bug"
   - "defect"
 
@@ -23,3 +26,9 @@ label_prefix: "arxiv"
 
 # Whether to include cross-listed papers
 include_cross_listed: true
+
+# Where to save archived paper summaries
+archive_dir: "data/papers"
+
+# Whether to also create GitHub Issues for new papers
+create_github_issues: false

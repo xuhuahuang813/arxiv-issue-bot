@@ -1,6 +1,7 @@
 import sys
 import time
 
+from src.archive import archive_paper, is_already_archived
 from src.config import load_config
 from src.fetcher import ArxivFetcher, Paper
 from src.filter import filter_papers
@@ -31,21 +32,38 @@ def main() -> None:
     filtered = filter_papers(list(all_papers.values()), config.keywords)
     print(f"After keyword filtering: {len(filtered)} papers")
 
-    new_papers = [p for p in filtered if not is_already_posted(p.source_id)]
-    print(f"New papers (not yet posted): {len(new_papers)}")
+    new_papers = [
+        p for p in filtered if not is_already_archived(config.archive_dir, p.source_id)
+    ]
+    print(f"New papers (not yet archived): {len(new_papers)}")
 
+    archived = 0
     created = 0
     for paper in new_papers:
+        archive_path = archive_paper(paper, config.archive_dir)
+        archived += 1
+        print(f"  Archived: [{paper.source_id}] {archive_path}")
+
+        if not config.create_github_issues:
+            continue
+
+        if is_already_posted(paper.source_id):
+            print(f"  Skipped issue: [{paper.source_id}] already exists")
+            continue
+
         if create_issue(paper, config.label_prefix):
             created += 1
-            print(f"  Created: [{paper.source_id}] {paper.title}")
+            print(f"  Created issue: [{paper.source_id}] {paper.title}")
         else:
             print(
-                f"  FAILED:  [{paper.source_id}] {paper.title}",
+                f"  FAILED issue:  [{paper.source_id}] {paper.title}",
                 file=sys.stderr,
             )
 
-    print(f"\nDone. Created {created} new issues.")
+    print(
+        f"\nDone. Archived {archived} new papers"
+        f" and created {created} new issues."
+    )
 
 
 if __name__ == "__main__":

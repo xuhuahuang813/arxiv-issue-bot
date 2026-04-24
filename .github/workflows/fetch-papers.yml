@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: write
   issues: write
 
 jobs:
@@ -14,10 +15,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Fetch papers and create issues
+      - name: Install dependencies
+        run: python3 -m pip install .
+
+      - name: Fetch papers and archive abstracts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: uv run python -m src.main
+        run: python3 -m src.main
+
+      - name: Commit archived papers
+        run: |
+          if git diff --quiet -- data/papers; then
+            echo "No new archived papers"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/papers
+          git commit -m "Archive latest arXiv papers"
+          git push
