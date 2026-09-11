@@ -14,7 +14,6 @@ keywords:
   - "DBMS"
   - "cardinality estimation"
   - "query optimization"
-  - "large language model"
 
 # Maximum number of papers to fetch per category per run
 max_results_per_category: 50
